@@ -1,30 +1,22 @@
 # Student: Ungureanu Vlad
 # Group: FAF-223
+
 # SOLID Principles in Java: SRP and OCP Implementation
 
 ## 1. Single Responsibility Principle (SRP)
 
 ### Overview
-The **Single Responsibility Principle (SRP)** states that a class should have one, and only one, reason to change. In other words, a class should only have one responsibility or job. This principle encourages separation of concerns, making your code more modular and easier to maintain.
+The Single Responsibility Principle (SRP) states that a class should have only one reason to change. This principle encourages splitting responsibilities among different classes so that each class has a clear focus.
 
 ### Implementation
 
-For the SRP implementation, we created three distinct classes:
-1. **`User`**: Holds user-related data (name and email).
-2. **`EmailService`**: Responsible for sending emails to users.
-3. **`UserRepository`**: Responsible for saving users to the database.
+For SRP, I’ve separated user management, email sending, and database saving into distinct classes. The `User` class holds user data like name and email. The `EmailService` class handles the email-sending functionality. The `UserRepository` class deals with saving user information to the database. 
 
-Each class has a single responsibility:
-- The `User` class manages only the user's attributes (data).
-- The `EmailService` class manages the sending of emails.
-- The `UserRepository` class manages database-related operations (such as saving the user).
-
-This separation of responsibilities ensures that changes to one class (e.g., modifying how emails are sent) won’t affect the other classes (like user data or database operations).
+By splitting these concerns, we ensure that changing how emails are sent won’t affect user storage logic or the user data structure.
 
 ### Code Example
 
 ```java
-// User.java - Manages user data
 public class User {
     private String name;
     private String email;
@@ -43,27 +35,21 @@ public class User {
     }
 }
 
-// EmailService.java - Responsible for sending emails
 public class EmailService {
     public void sendEmail(User user, String message) {
-        // Simulate sending an email
         System.out.println("Sending email to " + user.getEmail() + ": " + message);
     }
 }
 
-// UserRepository.java - Responsible for database operations
 public class UserRepository {
     public void save(User user) {
-        // Simulate saving to a database
         System.out.println("Saving " + user.getName() + " to the database.");
     }
 }
 
-// Main.java - Entry point
 public class Main {
     public static void main(String[] args) {
         User user = new User("John Doe", "john@example.com");
-
         EmailService emailService = new EmailService();
         UserRepository userRepository = new UserRepository();
 
@@ -73,34 +59,29 @@ public class Main {
 }
 ```
 
-### Key Points
-- **Single Responsibility**: Each class has one clearly defined responsibility.
-- **Modularity**: Code is easier to modify without affecting other components.
+### Key Takeaways
+Each class here has a single responsibility, making the code easier to maintain and extend. If I need to modify how emails are sent, I only touch `EmailService`, and if I want to change how users are saved, I modify `UserRepository`. Everything else stays intact.
 
 ---
 
 ## 2. Open/Closed Principle (OCP)
 
 ### Overview
-The **Open/Closed Principle (OCP)** states that software entities (such as classes, modules, and functions) should be open for extension but closed for modification. This means that you should be able to extend the functionality of a class without altering its existing code.
+The Open/Closed Principle (OCP) means that a class should be open for extension but closed for modification. This allows adding new features or functionalities without modifying existing code.
 
 ### Implementation
 
-For the OCP implementation, we created an interface `Shape` and two concrete classes: `Circle` and `Rectangle`. These classes implement the `Shape` interface and provide their own logic to calculate the area. The area calculation functionality in the `AreaCalculator` class is open for extension because we can add more shapes (e.g., `Triangle`, `Square`) without modifying existing code. 
-
-This implementation prevents modifying the `AreaCalculator` class whenever new shapes are added.
+For OCP, I’ve created an interface `Shape` that defines a method for calculating the area. The `Circle` and `Rectangle` classes implement this interface and provide their own logic to calculate the area. The `AreaCalculator` class remains unchanged no matter how many new shapes are added. New shapes like `Triangle` or `Square` can be added by simply implementing the `Shape` interface, without touching the `AreaCalculator` code.
 
 ### Code Example
 
 ```java
 public class Main {
 
-    // Shape interface
     interface Shape {
         double calculateArea();
     }
 
-    // Circle class implementing the Shape interface
     static class Circle implements Shape {
         private double radius;
 
@@ -114,7 +95,6 @@ public class Main {
         }
     }
 
-    // Rectangle class implementing the Shape interface
     static class Rectangle implements Shape {
         private double length;
         private double width;
@@ -130,7 +110,6 @@ public class Main {
         }
     }
 
-    // AreaCalculator class that calculates the area of any Shape
     static class AreaCalculator {
         public double calculateShapeArea(Shape shape) {
             return shape.calculateArea();
@@ -143,30 +122,25 @@ public class Main {
 
         AreaCalculator calculator = new AreaCalculator();
 
-        // Calculate areas of different shapes
         System.out.println("Area of Circle: " + calculator.calculateShapeArea(circle));
         System.out.println("Area of Rectangle: " + calculator.calculateShapeArea(rectangle));
     }
 }
 ```
 
-### Key Points
-- **Open for Extension**: New shapes (like `Triangle` or `Square`) can be added by simply creating new classes that implement the `Shape` interface.
-- **Closed for Modification**: The existing classes, such as `AreaCalculator`, are not modified when extending functionality.
+### Key Takeaways
+This design allows new shapes to be added without changing the existing `AreaCalculator` class. The system is easy to extend with new features, and the existing code is safe from unintended changes.
 
 ---
 
 ## Conclusion
 
-Both the **Single Responsibility Principle (SRP)** and the **Open/Closed Principle (OCP)** are crucial in making software systems flexible, maintainable, and scalable:
-- **SRP** enforces separation of concerns, making each class responsible for a single part of the functionality.
-- **OCP** promotes extensibility by ensuring that existing code doesn't need to change when new functionality is added.
-
-By adhering to these principles, we achieve more modular, clean, and maintainable code in our Java project.
+Both SRP and OCP are important principles for making code modular, maintainable, and easy to extend. By adhering to SRP, we ensure that classes have distinct responsibilities, which reduces the chances of introducing bugs when making changes. With OCP, we can easily add new features without modifying the core functionality, making the system strong and flexible for future changes.
 
 ---
 
 ### References
+- [SOLID Documentation](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design)
 - [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
 - [Java Documentation](https://docs.oracle.com/en/java/)
 
