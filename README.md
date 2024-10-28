@@ -4,7 +4,7 @@
 # Creational Design Pattern
 
 ### Overview
-In this project, I developed a simple banking system in Java that applies three essential creational design patterns: Singleton, Factory, and Builder. The objective was to incorporate these patterns in a way that feels practical and relevant, showing how they make the code more modular and maintainable in a real-world scenario.
+In this project, I developed a simple banking system in Java that applies three essential creational design patterns: Singleton, Factory, and Builder. The objective was to incorporate these patterns in a way that feels practical and relevant, showing how they make the code more easier and maintainable in a real-world scenario.
 
 ### Project Structure
 
@@ -14,7 +14,7 @@ The project is organized into four main packages based on their responsibilities
 ### Implementation 
 
 #### Singleton Pattern
-The Singleton pattern is applied in the `Bank` class, which ensures that only a single instance of `Bank` exists through the application. This instance is accessed by a static `getInstance` method. Here’s the code 
+The Singleton pattern is applied in the `Bank` class, which ensures that only a single instance of `Bank` exists through the application. This instance is accessed by a static `getInstance` method. Let's look at code
 
 
 ```java
@@ -46,7 +46,7 @@ public class Bank {
 The Singleton pattern here makes sure that all account-related operations are managed centrally by one `Bank` instance. This way, data consistency is maintained across the application, as all accounts are stored in a single list.
 
 #### Factory Pattern 
-The Factory pattern is implemented in the `AccountFactory` class, which provides a method for creating `Account` objects. By using a factory for account creation, the code remains clean and avoids repetitive instantiation logic.
+The Factory pattern is implemented in the `AccountFactory` class, which provides a method for creating `Account` objects. By using a factory for account creation, the code remains clean and avoids repetitive logic.
 
 ```java
 package factory;
@@ -132,22 +132,23 @@ public class Main {
     public static void main(String[] args) {
         Bank bank = Bank.getInstance();
 
-        Customer customer1 = new Customer.Builder("John Doe").withAddress("123 Elm Street").build();
-        Customer customer2 = new Customer.Builder("Jane Smith").withPhone("555-1234").build();
+        Customer customer1 = new Customer.Builder("Vlad").withAddress("123 grove street").build();
+        Customer customer2 = new Customer.Builder("Marius").withPhone("026899999").build();
 
         Account savings = AccountFactory.createAccount("SAVINGS");
         Account checking = AccountFactory.createAccount("CHECKING");
 
         bank.addAccount(savings);
         bank.addAccount(checking);
-
+        
         savings.deposit(1000);
         checking.deposit(500);
-
+        
         System.out.println("Savings Balance: " + savings.getBalance());
         System.out.println("Checking Balance: " + checking.getBalance());
     }
 }
+
 
 ```
 

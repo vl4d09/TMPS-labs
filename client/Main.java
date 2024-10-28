@@ -9,8 +9,8 @@ public class Main {
     public static void main(String[] args) {
         Bank bank = Bank.getInstance();
 
-        Customer customer1 = new Customer.Builder("John Doe").withAddress("123 Elm Street").build();
-        Customer customer2 = new Customer.Builder("Jane Smith").withPhone("555-1234").build();
+        Customer customer1 = new Customer.Builder("Vlad").withAddress("123 grove street").build();
+        Customer customer2 = new Customer.Builder("Marius").withPhone("026899999").build();
 
         Account savings = AccountFactory.createAccount("SAVINGS");
         Account checking = AccountFactory.createAccount("CHECKING");
