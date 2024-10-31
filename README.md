@@ -4,7 +4,7 @@
 # Creational Design Pattern
 
 ### Overview
-In this project, I developed a simple banking system in Java that applies three essential creational design patterns: Singleton, Factory, and Builder. The objective was to incorporate these patterns in a way that feels practical and relevant, showing how they make the code more easier and maintainable in a real-world scenario.
+In this project, I developed a simple banking system in Java that applies three essential creational design patterns: Singleton, Factory, and Builder. The goal is to demonstrate how these patterns can be applied in a practical way, making the code easier to read.
 
 ### Project Structure
 
