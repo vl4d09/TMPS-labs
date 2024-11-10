@@ -1,27 +1,31 @@
 package client;
 
-import domain.Bank;
-import factory.AccountFactory;
-import models.Account;
-import models.Customer;
+import domain.models.Customer;
+import domain.models.Account;
+import utilities.facades.BankingFacade;
+import utilities.decorators.InterestRateBonus;
+import utilities.decorators.OverdraftProtection;
 
 public class Main {
     public static void main(String[] args) {
-        Bank bank = Bank.getInstance();
+        BankingFacade facade = new BankingFacade();
 
-        Customer customer1 = new Customer.Builder("Vlad").withAddress("123 grove street").build();
-        Customer customer2 = new Customer.Builder("Marius").withPhone("026899999").build();
+        Customer customer1 = new Customer.Builder("Alice")
+                .address("123 Main St")
+                .phone("555-1234")
+                .build();
 
-        Account savings = AccountFactory.createAccount("SAVINGS");
-        Account checking = AccountFactory.createAccount("CHECKING");
+        Account savingsAccount = facade.createAccount("savings", customer1);
+        facade.depositToAccount(savingsAccount, 500);
 
-        bank.addAccount(savings);
-        bank.addAccount(checking);
-        
-        savings.deposit(1000);
-        checking.deposit(500);
-        
-        System.out.println("Savings Balance: " + savings.getBalance());
-        System.out.println("Checking Balance: " + checking.getBalance());
+        // Applying overdraft protection
+        OverdraftProtection protectedAccount = new OverdraftProtection(savingsAccount, 100);
+        protectedAccount.withdraw(550);
+
+        // Applying interest rate bonus
+        InterestRateBonus bonusAccount = new InterestRateBonus(savingsAccount, 0.05);
+        bonusAccount.applyBonus();
+
+        System.out.println("Final Balance with Overdraft and Bonus: " + bonusAccount.getBalance());
     }
 }

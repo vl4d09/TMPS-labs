@@ -1,4 +1,4 @@
-package models;
+package domain.models;
 
 public class Customer {
     private String name;
@@ -11,6 +11,18 @@ public class Customer {
         this.phone = builder.phone;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
     public static class Builder {
         private String name;
         private String address;
@@ -20,12 +32,12 @@ public class Customer {
             this.name = name;
         }
 
-        public Builder withAddress(String address) {
+        public Builder address(String address) {
             this.address = address;
             return this;
         }
 
-        public Builder withPhone(String phone) {
+        public Builder phone(String phone) {
             this.phone = phone;
             return this;
         }

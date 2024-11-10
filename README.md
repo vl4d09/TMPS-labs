@@ -1,109 +1,69 @@
+# Creational and Structural Design Patterns in Banking Application
+
+## Author: Ungureanu Vlad
 
 ---
 
-# Creational Design Pattern
+## Objectives:
+&ensp; &ensp; __1. Study and understand the Structural Design Patterns.__
 
-### Overview
-In this project, I developed a simple banking system in Java that applies three essential creational design patterns: Singleton, Factory, and Builder. The goal is to demonstrate how these patterns can be applied in a practical way, making the code easier to read.
+&ensp; &ensp; __2. As a continuation of the previous laboratory work, think about the functionalities that your system will need to provide to the user.__
 
-### Project Structure
+&ensp; &ensp; __3. Implement some additional functionalities using structural design patterns.__
 
-The project is organized into four main packages based on their responsibilities: `client`, `domain`, `factory`, and `models`. The `client` package contains the main program that initializes and tests the system. The `domain` package has the `Bank` class, which is responsible for managing accounts and follows the Singleton pattern. The `factory` package includes the `AccountFactory`, which handles the creation of accounts, following the Factory pattern. Finally, the `models` package contains the main data models, `Account` and `Customer`, with the `Customer` class implementing the Builder pattern.
+## Theoretical background:
+&ensp; &ensp; In software engineering, the Structural Design Patterns are concerned with how classes and objects are composed to form larger structures. Structural class patterns use inheritance to create a hierarchy of classes/abstractions, but the structural object patterns use composition which is generally a more flexible alternative to inheritance.
 
+&ensp; &ensp; Some examples of from this category of design patterns are:
 
-### Implementation 
+   * Adapter
+   * Bridge
+   * Composite
+   * Decorator
+   * Facade
+   * Flyweight
+   * Proxy
 
-#### Singleton Pattern
-The Singleton pattern is applied in the `Bank` class, which ensures that only a single instance of `Bank` exists through the application. This instance is accessed by a static `getInstance` method. Let's look at code
+## Design Patterns Used:
 
+### Creational Design Patterns
+1. **Builder Pattern**: Used to simplify the creation of customer objects, which may have complex attributes.
+2. **Factory Pattern**: Used in the AccountFactory class to create different account types (such as SavingsAccount or CheckingAccount) based on input parameters.
+3. **Singleton Pattern**: Applied in the BankingFacade to ensure there’s only one point of interaction for the client.
 
-```java
-package domain;
+### Structural Design Patterns
+1. **Decorator Pattern**: Used to add additional features (such as interest rate bonuses) to accounts without changing their base functionality.
+2. **Facade Pattern**: Used in the BankingFacade to simplify the client interface and hide complex operations behind.
+3. **Composite Pattern** : Could be used if multiple accounts need to be managed together, like for a customer having several types of accounts.
 
-import models.Account;
-import java.util.ArrayList;
-import java.util.List;
+---
 
-public class Bank {
-    private static Bank instance;
-    private List<Account> accounts = new ArrayList<>();
+## Implementation & Explanation
 
-    private Bank() {}
+### Introduction / Theory 
 
-    public static synchronized Bank getInstance() {
-        if (instance == null) {
-            instance = new Bank();
-        }
-        return instance;
-    }
+The project simulates a basic banking application. To manage and simplify operations, we use design patterns that address object creation, encapsulation. Implementing creational patterns improves flexibility in object exmaple, while structural patterns organize functionality.
 
-    public void addAccount(Account account) {
-        accounts.add(account);
-    }
-}
-```
+### Implementation Details
 
-The Singleton pattern here makes sure that all account-related operations are managed centrally by one `Bank` instance. This way, data consistency is maintained across the application, as all accounts are stored in a single list.
+### 1. **Builder Pattern** 
 
-#### Factory Pattern 
-The Factory pattern is implemented in the `AccountFactory` class, which provides a method for creating `Account` objects. By using a factory for account creation, the code remains clean and avoids repetitive logic.
+The **Builder Pattern** helps in creating complex objects with multiple optional parts. 
+In our case, we use the builder pattern to create a customer object. Instead of forcing the client to pass a lot of parameters to the constructor, the builder allows the client to set only the necessary attributes.
 
-```java
-package factory;
-
-import models.Account;
-import models.SavingsAccount;
-import models.CheckingAccount;
-
-public class AccountFactory {
-    public static Account createAccount(String type) {
-        switch (type) {
-            case "SAVINGS":
-                return new SavingsAccount();
-            case "CHECKING":
-                return new CheckingAccount();
-            default:
-                throw new IllegalArgumentException("Invalid account type: " + type);
-        }
-    }
-}
-
-```
-
-The Factory pattern allows for future modifications if additional account types need to be introduced. Instead of modifying every place where `Account` objects are created, one would only need to adjust the `AccountFactory` class, making it an easily solution.
-
-#### Builder Pattern 
-The Builder pattern is used in the `Customer` class to create customer objects with optional fields, such as address and phone number. This pattern makes object creation flexible, especially when objects have optional attributes.
 
 ```java
-package models;
-
-public class Customer {
-    private String name;
-    private String address;
-    private String phone;
-
-    private Customer(Builder builder) {
-        this.name = builder.name;
-        this.address = builder.address;
-        this.phone = builder.phone;
-    }
-
-    public static class Builder {
-        private String name;
-        private String address;
-        private String phone;
-
-        public Builder(String name) {
+        public Builder setName(String name) {
             this.name = name;
+            return this;
         }
 
-        public Builder withAddress(String address) {
+        public Builder setAddress(String address) {
             this.address = address;
             return this;
         }
 
-        public Builder withPhone(String phone) {
+        public Builder setPhone(String phone) {
             this.phone = phone;
             return this;
         }
@@ -112,47 +72,105 @@ public class Customer {
             return new Customer(this);
         }
     }
-}
-```
 
-With the Builder pattern, creating `Customer` objects is straightforward and adaptable. Only the `name` field is required, while other fields like `address` and `phone` can be added as needed, making the `Customer` class much easier to work with, especially when some fields are optional.
-
-### Testing the Project 
-In the `Main` class, the application is tested by creating a `Customer`, generating an `Account`, and performing a simple deposit operation. Here is the code 
-
-```java
-package client;
-
-import domain.Bank;
-import factory.AccountFactory;
-import models.Account;
-import models.Customer;
-
-public class Main {
-    public static void main(String[] args) {
-        Bank bank = Bank.getInstance();
-
-        Customer customer1 = new Customer.Builder("Vlad").withAddress("123 grove street").build();
-        Customer customer2 = new Customer.Builder("Marius").withPhone("026899999").build();
-
-        Account savings = AccountFactory.createAccount("SAVINGS");
-        Account checking = AccountFactory.createAccount("CHECKING");
-
-        bank.addAccount(savings);
-        bank.addAccount(checking);
-        
-        savings.deposit(1000);
-        checking.deposit(500);
-        
-        System.out.println("Savings Balance: " + savings.getBalance());
-        System.out.println("Checking Balance: " + checking.getBalance());
+    private Customer(Builder builder) {
+        this.name = builder.name;
+        this.address = builder.address;
+        this.phone = builder.phone;
     }
 }
-
-
 ```
 
-In this `Main` program, I first retrieve the singleton instance of `Bank`. Then, I create a `Customer` with only a name and optional address using the Builder pattern, demonstrating the flexibility of the Builder. Using the Factory, an `Account` is created and added to the bank. Finally, a deposit is made to verify that the account balance updates correctly.
 
-### Summary
-In this project, I applied three creational patterns to implement a simple yet functional banking system. The Singleton pattern is used to manage a single instance of the `Bank` class, ensuring consistent account management. The Factory pattern simplifies the creation of `Account` objects, while the Builder pattern offers a flexible way to create `Customer` objects.
+
+### 2. **Factory Pattern** 
+
+The **Factory Pattern** centralizes object creation into a single class, making it easier to manage different object types. In our system, the factory is responsible for creating accounts (savingsaccount, checkingaccount), that the correct type of account is created based on the client's request.
+
+
+```java
+public class AccountFactory {
+    public Account createAccount(String type) {
+        if (type.equalsIgnoreCase("SAVINGS")) {
+            return new SavingsAccount();
+        } else if (type.equalsIgnoreCase("CHECKING")) {
+            return new CheckingAccount();
+        }
+        throw new IllegalArgumentException("Unknown account type");
+    }
+}
+```
+
+### 3. **Singleton Pattern** 
+
+The **Singleton Pattern** ensures that only one instance of a class exists in the system. It is particularly useful like in our case, a bankingfacade, which acts as a single entry point for all banking operations.
+
+
+
+```java
+public class BankingFacade {
+    private static BankingFacade instance;
+
+    private BankingFacade() {}
+
+    public static BankingFacade getInstance() {
+        if (instance == null) {
+            instance = new BankingFacade();
+        }
+        return instance;
+    }
+
+    public Account createAccount(String type) {
+        return new AccountFactory().createAccount(type);
+    }
+}
+```
+
+
+
+### 4. **Decorator Pattern** 
+
+The **Decorator Pattern** allows us to add additional responsibilities to an object dynamically, without modifying its original class. In this project, we use it to enhance the Account class by adding features like OverdraftProtection and InterestRateBonus.
+
+
+
+```java
+public class OverdraftProtection extends AccountDecorator {
+    public OverdraftProtection(Account account) {
+        super(account);
+    }
+
+    @Override
+    public void performOperation() {
+        super.performOperation();
+        System.out.println("Overdraft protection enabled.");
+    }
+}
+```
+
+### 5. **Facade Pattern** 
+
+The **Facade Pattern** provides a simplified interface to a set of interfaces in a subsystem, hiding the complexity of account creation and feature addition from the client.
+
+```java
+public class BankingFacade {
+    private AccountFactory accountFactory = new AccountFactory();
+
+    public Account createAccount(String type) {
+        return accountFactory.createAccount(type);
+    }
+
+    public void addInterestRateBonus(Account account) {
+        new InterestRateBonus(account).performOperation();
+    }
+}
+```
+
+
+---
+
+### Conclusion
+
+Using design patterns like Builder, Factory, Singleton, Decorator, and Facade has made the banking system more organized and easier to maintain. These patterns helped simplify complex tasks, centralize object creation, and allow for easy feature extensions without changing core logic. Overall, they’ve made the system more flexible, maintainable, and scalable for future updates.structure.
+
+---
