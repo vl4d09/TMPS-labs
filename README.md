@@ -153,24 +153,66 @@ public class OverdraftProtection extends AccountDecorator {
 The **Facade Pattern** provides a simplified interface to a set of interfaces in a subsystem, hiding the complexity of account creation and feature addition from the client.
 
 ```java
-public class BankingFacade {
-    private AccountFactory accountFactory = new AccountFactory();
 
-    public Account createAccount(String type) {
-        return accountFactory.createAccount(type);
+public class BankingFacade {
+    private AccountComposite portfolio = new AccountComposite("Customer Portfolio");
+
+    public Account createAccount(String accountType, Customer customer) {
+        Account account = AccountFactory.createAccount(accountType, nextAccountId++);
+        portfolio.addAccount(new AccountLeaf(accountType + " (" + account.getId() + ")", account.getBalance()));
+        return account;
     }
 
-    public void addInterestRateBonus(Account account) {
-        new InterestRateBonus(account).performOperation();
+    public void displayPortfolio() {
+        portfolio.displayAccountDetails();
+    }
+}
+
+```
+### 6. Composite Pattern
+
+The **Composite Pattern** was integrated into the BankingFacade to manage both individual accounts and groups of accounts, such as a "Portfolio." This allows treating single accounts and account collections the same way, simplifying operations like displaying balances or managing multiple accounts.
+
+#### **Code Snippet**
+
+**`AccountComposite` and `AccountLeaf`:**
+```java
+public class AccountComposite implements AccountComponent {
+    private List<AccountComponent> accounts = new ArrayList<>();
+
+    public void addAccount(AccountComponent account) {
+        accounts.add(account);
+    }
+
+    public void displayAccountDetails() {
+        for (AccountComponent account : accounts) {
+            account.displayAccountDetails();
+        }
+    }
+}
+
+public class AccountLeaf implements AccountComponent {
+    private String name;
+    private double balance;
+
+    public AccountLeaf(String name, double balance) {
+        this.name = name;
+        this.balance = balance;
+    }
+
+    public void displayAccountDetails() {
+        System.out.println("Account: " + name + ", Balance: " + balance);
     }
 }
 ```
+
+Here, AccountComposite acts as a group, while AccountLeaf represents an individual account. These classes work together to form the composite structure, which the bankingfacade manages transparently.
 
 
 ---
 
 ### Conclusion
 
-Using design patterns like Builder, Factory, Singleton, Decorator, and Facade has made the banking system more organized and easier to maintain. These patterns helped simplify complex tasks, centralize object creation, and allow for easy feature extensions without changing core logic. Overall, they’ve made the system more flexible, maintainable, and scalable for future updates.structure.
+Using design patterns like Builder, Factory, Singleton, Decorator, Composite and Facade has made the banking system more organized and easier to maintain. These patterns helped simplify complex tasks, centralize object creation, and allow for easy feature extensions without changing core logic. Overall, they’ve made the system more flexible, maintainable, and scalable for future updates.structure.
 
 ---

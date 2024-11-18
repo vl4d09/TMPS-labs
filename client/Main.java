@@ -18,11 +18,9 @@ public class Main {
         Account savingsAccount = facade.createAccount("savings", customer1);
         facade.depositToAccount(savingsAccount, 500);
 
-        // Applying overdraft protection
         OverdraftProtection protectedAccount = new OverdraftProtection(savingsAccount, 100);
         protectedAccount.withdraw(550);
 
-        // Applying interest rate bonus
         InterestRateBonus bonusAccount = new InterestRateBonus(savingsAccount, 0.05);
         bonusAccount.applyBonus();
 
