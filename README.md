@@ -46,89 +46,8 @@ The project simulates a basic banking application. To manage and simplify operat
 
 ### Implementation Details
 
-### 1. **Builder Pattern** 
 
-The **Builder Pattern** helps in creating complex objects with multiple optional parts. 
-In our case, we use the builder pattern to create a customer object. Instead of forcing the client to pass a lot of parameters to the constructor, the builder allows the client to set only the necessary attributes.
-
-
-```java
-        public Builder setName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder setAddress(String address) {
-            this.address = address;
-            return this;
-        }
-
-        public Builder setPhone(String phone) {
-            this.phone = phone;
-            return this;
-        }
-
-        public Customer build() {
-            return new Customer(this);
-        }
-    }
-
-    private Customer(Builder builder) {
-        this.name = builder.name;
-        this.address = builder.address;
-        this.phone = builder.phone;
-    }
-}
-```
-
-
-
-### 2. **Factory Pattern** 
-
-The **Factory Pattern** centralizes object creation into a single class, making it easier to manage different object types. In our system, the factory is responsible for creating accounts (savingsaccount, checkingaccount), that the correct type of account is created based on the client's request.
-
-
-```java
-public class AccountFactory {
-    public Account createAccount(String type) {
-        if (type.equalsIgnoreCase("SAVINGS")) {
-            return new SavingsAccount();
-        } else if (type.equalsIgnoreCase("CHECKING")) {
-            return new CheckingAccount();
-        }
-        throw new IllegalArgumentException("Unknown account type");
-    }
-}
-```
-
-### 3. **Singleton Pattern** 
-
-The **Singleton Pattern** ensures that only one instance of a class exists in the system. It is particularly useful like in our case, a bankingfacade, which acts as a single entry point for all banking operations.
-
-
-
-```java
-public class BankingFacade {
-    private static BankingFacade instance;
-
-    private BankingFacade() {}
-
-    public static BankingFacade getInstance() {
-        if (instance == null) {
-            instance = new BankingFacade();
-        }
-        return instance;
-    }
-
-    public Account createAccount(String type) {
-        return new AccountFactory().createAccount(type);
-    }
-}
-```
-
-
-
-### 4. **Decorator Pattern** 
+### 1. **Decorator Pattern** 
 
 The **Decorator Pattern** allows us to add additional responsibilities to an object dynamically, without modifying its original class. In this project, we use it to enhance the Account class by adding features like OverdraftProtection and InterestRateBonus.
 
@@ -148,7 +67,7 @@ public class OverdraftProtection extends AccountDecorator {
 }
 ```
 
-### 5. **Facade Pattern** 
+### 2. **Facade Pattern** 
 
 The **Facade Pattern** provides a simplified interface to a set of interfaces in a subsystem, hiding the complexity of account creation and feature addition from the client.
 
@@ -169,7 +88,7 @@ public class BankingFacade {
 }
 
 ```
-### 6. Composite Pattern
+### 3. Composite Pattern
 
 The **Composite Pattern** was integrated into the BankingFacade to manage both individual accounts and groups of accounts, such as a "Portfolio." This allows treating single accounts and account collections the same way, simplifying operations like displaying balances or managing multiple accounts.
 

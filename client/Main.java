@@ -10,16 +10,16 @@ public class Main {
     public static void main(String[] args) {
         BankingFacade facade = new BankingFacade();
 
-        Customer customer1 = new Customer.Builder("Alice")
+        Customer customer1 = new Customer.Builder("Vlad")
                 .address("123 Main St")
-                .phone("555-1234")
+                .phone("12345")
                 .build();
 
         Account savingsAccount = facade.createAccount("savings", customer1);
         facade.depositToAccount(savingsAccount, 500);
 
         OverdraftProtection protectedAccount = new OverdraftProtection(savingsAccount, 100);
-        protectedAccount.withdraw(550);
+        protectedAccount.withdraw(520);
 
         InterestRateBonus bonusAccount = new InterestRateBonus(savingsAccount, 0.05);
         bonusAccount.applyBonus();
