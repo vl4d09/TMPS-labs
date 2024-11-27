@@ -1,29 +1,18 @@
 package client;
 
-import domain.models.Customer;
 import domain.models.Account;
+import domain.models.Customer;
 import utilities.facades.BankingFacade;
-import utilities.decorators.InterestRateBonus;
-import utilities.decorators.OverdraftProtection;
 
 public class Main {
     public static void main(String[] args) {
         BankingFacade facade = new BankingFacade();
 
-        Customer customer1 = new Customer.Builder("Vlad")
-                .address("123 Main St")
-                .phone("12345")
-                .build();
+        Customer john = new Customer("Vlad");
+        Account johnsAccount = facade.createAccount("Savings Account", john);
 
-        Account savingsAccount = facade.createAccount("savings", customer1);
-        facade.depositToAccount(savingsAccount, 500);
-
-        OverdraftProtection protectedAccount = new OverdraftProtection(savingsAccount, 100);
-        protectedAccount.withdraw(520);
-
-        InterestRateBonus bonusAccount = new InterestRateBonus(savingsAccount, 0.05);
-        bonusAccount.applyBonus();
-
-        System.out.println("Final Balance with Overdraft and Bonus: " + bonusAccount.getBalance());
+        facade.depositToAccount(johnsAccount, 500);
+        facade.withdrawFromAccount(johnsAccount, 200);
+        facade.withdrawFromAccount(johnsAccount, 400); 
     }
 }
