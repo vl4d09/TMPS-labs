@@ -5,24 +5,46 @@
 ---
 
 ## Objectives:
-&ensp; &ensp; __1. Study and understand the Structural Design Patterns.__
+&ensp; &ensp; __1. Study and understand the Behavioral Design Patterns.__
 
-&ensp; &ensp; __2. As a continuation of the previous laboratory work, think about the functionalities that your system will need to provide to the user.__
+&ensp; &ensp; __2. As a continuation of the previous laboratory work, think about what communication between software entities might be involed in your system.__
 
-&ensp; &ensp; __3. Implement some additional functionalities using structural design patterns.__
+&ensp; &ensp; __3. Implement some additional functionalities using behavioral design patterns.__
 
 ## Theoretical background:
-&ensp; &ensp; In software engineering, the Structural Design Patterns are concerned with how classes and objects are composed to form larger structures. Structural class patterns use inheritance to create a hierarchy of classes/abstractions, but the structural object patterns use composition which is generally a more flexible alternative to inheritance.
+&ensp; &ensp; In software engineering, behavioral design patterns have the purpose of identifying common communication patterns between different software entities. By doing so, these patterns increase flexibility in carrying out this communication.
 
-&ensp; &ensp; Some examples of from this category of design patterns are:
+&ensp; &ensp; Some examples from this category of design patterns are :
 
-   * Adapter
-   * Bridge
-   * Composite
-   * Decorator
-   * Facade
-   * Flyweight
-   * Proxy
+   * Chain of Responsibility
+   * Command
+   * Interpreter
+   * Iterator
+   * Mediator
+   * Observer
+   * Strategy
+   
+## Main tasks :
+&ensp; &ensp; __1. By extending your project, implement at least 1 behavioral design pattern in your project:__
+  * The implemented design pattern should help to perform the tasks involved in your system.
+  * The behavioral DPs can be integrated into you functionalities alongside the structural ones.
+  * There should only be one client for the whole system.
+  
+&ensp; &ensp; __2. Keep your files grouped (into packages/directories) by their responsibilities (an example project structure):__
+  * client;
+  * domain;
+  * utilities;
+  * data(if applies);
+  
+&ensp; &ensp; __3. Document your work in a separate markdown file according to the requirements presented below (the structure can be extended of course):__
+  * Topic of the laboratory work.
+  * Author.
+  * Introduction/Theory/Motivation.
+  * Implementation & Explanation (you can include code snippets as well):
+    * Indicate the location of the code snippet.
+    * Emphasize the main idea and motivate the usage of the pattern.
+  * Results/Screenshots/Conclusions;
+
 
 ## Design Patterns Used:
 
@@ -36,6 +58,12 @@
 2. **Facade Pattern**: Used in the BankingFacade to simplify the client interface and hide complex operations behind.
 3. **Composite Pattern** : Could be used if multiple accounts need to be managed together, like for a customer having several types of accounts.
 
+
+### Behavioral Design Patterns
+
+1. **Observer Pattern** is a behavioral design pattern in which an object, called the subject, maintains a list of its dependentsand automatically notifies them of any state changes
+
+
 ---
 
 ## Implementation & Explanation
@@ -47,91 +75,117 @@ The project simulates a basic banking application. To manage and simplify operat
 ### Implementation Details
 
 
-### 1. **Decorator Pattern** 
+In the context of a banking system, accounts frequently change state (e.g., balance changes due to deposits or withdrawals). The Observer Pattern allows customers to be automatically notified whenever these changes occur without coupling the account's logic with notification mechanisms.  
 
-The **Decorator Pattern** allows us to add additional responsibilities to an object dynamically, without modifying its original class. In this project, we use it to enhance the Account class by adding features like OverdraftProtection and InterestRateBonus.
+---
 
+### Where It’s Implemented
 
+#### Core Components:
+1. **`Subject.java`**: Manages a list of observers and provides methods for adding, removing, and notifying them.  
+2. **`Observer.java`**: Defines the update method to handle notifications.  
+3. **`Customer.java`**: Implements Observer` to receive and display notifications.  
+4. **`Account.java`**: Inherits from Subject to act as the notifier for state changes.  
+
+---
+
+### Code Snippets
+
+#### Subject Class
+The `Subject` class maintains a list of observers and notifies them when the account state changes.
 
 ```java
-public class OverdraftProtection extends AccountDecorator {
-    public OverdraftProtection(Account account) {
-        super(account);
+package domain.models;
+
+public interface Subject {
+    void addObserver(Observer observer);
+    void removeObserver(Observer observer);
+    void notifyObservers(String message);
+}
+
+```
+
+#### Account Class  
+The `Account` class acts as a **subject** and notifies customers of deposits and withdrawals.
+
+```java
+    public void deposit(double amount) {
+        balance += amount;
+        notifyObservers("Deposit of " + amount + " completed. New balance: " + balance);
+    }
+
+    public void withdraw(double amount) {
+        if (amount <= balance) {
+            balance -= amount;
+            notifyObservers("Withdrawal of " + amount + " completed. New balance: " + balance);
+        } else {
+            notifyObservers("Withdrawal of " + amount + " failed. Insufficient funds.");
+        }
+    }
+```
+
+#### Customer Class  
+The `Customer` class subscribes to accounts and gets notified of updates.
+
+```java
+package domain.models;
+
+public class Customer implements Observer {
+    private String name;
+
+    public Customer(String name) {
+        this.name = name;
     }
 
     @Override
-    public void performOperation() {
-        super.performOperation();
-        System.out.println("Overdraft protection enabled.");
+    public void update(String message) {
+        System.out.println("Notification for " + name + ": " + message);
     }
 }
 ```
 
-### 2. **Facade Pattern** 
+---
 
-The **Facade Pattern** provides a simplified interface to a set of interfaces in a subsystem, hiding the complexity of account creation and feature addition from the client.
+### Integrating into the Client
 
+The `BankingFacade` ensures that customers are linked as observers to their accounts. Notifications are sent automatically on deposits and withdrawals.
+
+**`BankingFacade.java`**
 ```java
+package utilities.facades;
+
+import domain.factories.AccountFactory;
+import domain.models.Account;
+import domain.models.Customer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BankingFacade {
-    private AccountComposite portfolio = new AccountComposite("Customer Portfolio");
+    private Map<Integer, Account> accounts = new HashMap<>();
+    private int nextAccountId = 1;
 
     public Account createAccount(String accountType, Customer customer) {
         Account account = AccountFactory.createAccount(accountType, nextAccountId++);
-        portfolio.addAccount(new AccountLeaf(accountType + " (" + account.getId() + ")", account.getBalance()));
+        account.addObserver(customer); 
+        accounts.put(account.getId(), account);
         return account;
     }
 
-    public void displayPortfolio() {
-        portfolio.displayAccountDetails();
-    }
-}
-
-```
-### 3. Composite Pattern
-
-The **Composite Pattern** was integrated into the BankingFacade to manage both individual accounts and groups of accounts, such as a "Portfolio." This allows treating single accounts and account collections the same way, simplifying operations like displaying balances or managing multiple accounts.
-
-#### **Code Snippet**
-
-**`AccountComposite` and `AccountLeaf`:**
-```java
-public class AccountComposite implements AccountComponent {
-    private List<AccountComponent> accounts = new ArrayList<>();
-
-    public void addAccount(AccountComponent account) {
-        accounts.add(account);
+    public void depositToAccount(Account account, double amount) {
+        account.deposit(amount);
     }
 
-    public void displayAccountDetails() {
-        for (AccountComponent account : accounts) {
-            account.displayAccountDetails();
-        }
-    }
-}
-
-public class AccountLeaf implements AccountComponent {
-    private String name;
-    private double balance;
-
-    public AccountLeaf(String name, double balance) {
-        this.name = name;
-        this.balance = balance;
-    }
-
-    public void displayAccountDetails() {
-        System.out.println("Account: " + name + ", Balance: " + balance);
+    public void withdrawFromAccount(Account account, double amount) {
+        account.withdraw(amount);
     }
 }
 ```
-
-Here, AccountComposite acts as a group, while AccountLeaf represents an individual account. These classes work together to form the composite structure, which the bankingfacade manages transparently.
-
 
 ---
 
 ### Conclusion
 
-Using design patterns like Builder, Factory, Singleton, Decorator, Composite and Facade has made the banking system more organized and easier to maintain. These patterns helped simplify complex tasks, centralize object creation, and allow for easy feature extensions without changing core logic. Overall, they’ve made the system more flexible, maintainable, and scalable for future updates.structure.
+The Observer Pattern was effectively integrated into the banking system to enable real-time notifications for customers when account changes occur. By decoupling the account and customer classes, the system became more flexible and maintainable, allowing customers to be notified of updates without tightly coupling them to account operations. This design choice enhances scalability, as adding new observers, such as a mobile app notification service, becomes easy without altering existing logic. 
 
 ---
